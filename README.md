@@ -73,3 +73,5 @@ Traffic Congestion (TC): https://www.youtube.com/watch?v=59c6yIYIys8
 Street Facility (SF): https://drive.google.com/drive/folders/1SkogSHAO80lrMThiznVMfpUlbmsua8qR?usp=sharing
 
 ##
+
+Note: This version includes the core implementation that was not provided in the original LAVA release.
