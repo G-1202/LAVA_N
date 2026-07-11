@@ -66,16 +66,36 @@ def test(TL, tao, start, chunk_start, lambda_decay=0.2, theta=0.5):
     Output the estimated latency and inference accuracy of the next video segment under all configurations.
 """
 def fv_pre(S_l, M_l, L_l, Mo_l, fr, con_l, r, wait):
-    prediction = []
-    """
-        Integrates multiple input streams and uses trained models to predict
-        accuracy, latency, and bandwidth usage across different configurations.
+    combined = []
+    for i in range(8):
+        combined.append([S_l[i], M_l[i], L_l[i], Mo_l[i], con_l[i][0], con_l[i][1], con_l[i][2]])
+    X1 = torch.tensor(combined, dtype=torch.float32)
+    X1 = X1.to(device)
 
-        Returns:
-            list: Predictions for each configuration knob.
-    """
-    # Core algorithm implementation details are withheld
-    # Complete code will be released upon paper acceptance
+    X2 = np.array(fr)
+    X2 = torch.tensor(X2, dtype=torch.float32).permute(2, 0, 1)
+    X2 = X2.to(device)
+
+    X3 = torch.tensor(con_l[-1], dtype=torch.float32)
+    X3 = X3.to(device)
+
+    with torch.no_grad():
+        sample_X1 = X1.unsqueeze(0)
+        sample_X2 = X2.unsqueeze(0)
+        sample_X3 = X3.unsqueeze(0)
+        outputs_1 = i_model(sample_X2, sample_X3)
+        outputs_2 = v_model(sample_X1)
+    Y1_pred = outputs_1.squeeze().cpu().numpy()
+    Y2_pred = outputs_2.squeeze().cpu().numpy()
+    prediction = []
+    for knob in range(len(Y1_pred)):
+        a = to_k(knob)
+        code_t = mean_time_list[knob]
+        prediction.append(
+            [a, # config
+             Y1_pred[knob], # accuracy
+             code_t + (2 * Y2_pred[knob] * REAL[a[0]] / r) + wait, # latency
+             Y2_pred[knob] * REAL[a[0]] / 1000]) # bw usage
     return prediction
 
 
