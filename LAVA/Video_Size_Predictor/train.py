@@ -43,17 +43,27 @@ class VideoDataset(Dataset):
         return self.num
 
     def __getitem__(self, idx):
-        """
-            Returns the idx-th training sample.
+        rng = np.random.RandomState(self.seed + idx)
+        start_chunk = rng.randint(0, self.len - self.input_steps)
+        X = []
+        for i in range(self.input_steps):
+            bit = np.random.randint(11)
+            skip = np.random.randint(4)
+            re = np.random.randint(4)
+            x = self.df.loc[(start_chunk+i, bit, skip, re), ['Small', 'Mid', 'Large', 'Move']].values.tolist()
+            x.append(bit)
+            x.append(skip)
+            x.append(re)
+            X.append(x)
+        Y = []
+        for i in range(self.input_steps, self.input_steps + 1):
+            for bit in range(11):
+                for skip in range(4):
+                    for re in range(4):
+                        y = self.df.loc[(start_chunk + i, bit, skip, re), 'Ratio']
+                        Y.append(y)
+        return torch.tensor(X, dtype=torch.float32), torch.tensor(Y, dtype=torch.float32)
 
-            Return format: (Temporal_features, Size_labels)
-            - Temporal_features: Tensor with shape [input_steps, 7]
-            - Size_labels: Tensor with shape [176]
-        """
-        # Core algorithm implementation details are withheld
-        # Complete code will be released upon paper acceptance
-        X1, S = self._generate_sample(idx)
-        return X1, S
 
 class EarlyStopper:
     def __init__(self, patience=5, min_delta=0, mode='min'):
