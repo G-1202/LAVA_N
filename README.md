@@ -73,6 +73,3 @@ Traffic Congestion (TC): https://www.youtube.com/watch?v=59c6yIYIys8
 Street Facility (SF): https://drive.google.com/drive/folders/1SkogSHAO80lrMThiznVMfpUlbmsua8qR?usp=sharing
 
 ##
-
-Note: This code is released in conjunction with a manuscript currently under peer review. It is provided to substantiate the key findings but is not the final, fully-featured version. We anticipate releasing the complete codebase upon acceptance.
-
